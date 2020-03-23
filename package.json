@@ -1,0 +1,47 @@
+{
+  "name": "project-tasks-scheduling-engine",
+  "version": "0.0.1",
+  "description": "Simple sheduling algorithm for planning tasks with day-based time quant",
+  "main": "dist/src/project-tasks-scheduling-engine.js",
+  "types": "dist/src/project-tasks-scheduling-engine.d.ts",
+  "scripts": {
+    "prepublishOnly": "npm test && npm run compile",
+    "compile": "tsc",
+    "test": "jest",
+    "lint": "eslint src/*.ts"
+  },
+  "pre-commit": "lint-staged",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DimitryDushkin/project-tasks-scheduling-engine.git"
+  },
+  "author": "Dmitry Dushkin <dndushkin@gmail.com> (https://github.com/dndushkin)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DimitryDushkin/project-tasks-scheduling-engine/issues"
+  },
+  "homepage": "https://github.com/DimitryDushkin/project-tasks-scheduling-engine",
+  "files": [
+    "src/"
+  ],
+  "keywords": [
+    "scheduling,",
+    "typescript"
+  ],
+  "dependencies": {
+    "date-fns": "^2.11.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/jest": "^25.1.4",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "jest": "^25.1.0",
+    "lint-staged": "^10.0.8",
+    "pre-commit": "^1.2.2",
+    "prettier": "2.0.1",
+    "typescript": "^3.8.3"
+  }
+}
