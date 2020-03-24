@@ -1,4 +1,4 @@
-import { scheduleTasks } from "./scheduleTasks";
+import { scheduleTasks } from "../scheduleTasks";
 import {
   tasks,
   correctlyScheduledTasks,

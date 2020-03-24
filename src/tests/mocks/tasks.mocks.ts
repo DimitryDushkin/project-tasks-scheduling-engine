@@ -1,4 +1,4 @@
-import { Task } from "../scheduleTasks";
+import { Task } from "../../scheduleTasks";
 import { subDays } from "date-fns";
 
 export const todayForTest = new Date("2020-01-01");

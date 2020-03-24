@@ -1,4 +1,4 @@
-import { makeGraphFromTasks, Graph, makeReverseGraph } from "./graph.utils";
+import { makeGraphFromTasks, Graph, makeReverseGraph } from "../graph.utils";
 import { tasks } from "./mocks/tasks.mocks";
 
 describe("graph.utils", () => {

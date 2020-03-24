@@ -1,4 +1,4 @@
-import { shiftToFirstNextBusinessDay } from "./date.utils";
+import { shiftToFirstNextBusinessDay } from "../date.utils";
 
 describe("date.utils", () => {
   it("should shift +2 days if on saturday", () => {

@@ -2,28 +2,25 @@
   "name": "project-tasks-scheduling-engine",
   "version": "0.0.1",
   "description": "Simple sheduling algorithm for planning tasks with day-based time quant",
-  "main": "dist/src/project-tasks-scheduling-engine.js",
-  "types": "dist/src/project-tasks-scheduling-engine.d.ts",
+  "main": "src/scheduleTasks.js",
   "scripts": {
-    "prepublishOnly": "npm test && npm run compile",
+    "prepublishOnly": "npm run all-checks",
     "compile": "tsc",
     "test": "jest",
-    "lint": "eslint src/*.ts"
+    "lint": "eslint src/*.ts",
+    "all-checks": "npm test && npm run lint && npm run compile"
   },
-  "pre-commit": "lint-staged",
+  "pre-commit": "all-checks",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DimitryDushkin/project-tasks-scheduling-engine.git"
   },
-  "author": "Dmitry Dushkin <dndushkin@gmail.com> (https://github.com/dndushkin)",
+  "author": "Dmitry Dushkin <dndushkin@gmail.com> (https://github.com/DimitryDushkin)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/DimitryDushkin/project-tasks-scheduling-engine/issues"
   },
   "homepage": "https://github.com/DimitryDushkin/project-tasks-scheduling-engine",
-  "files": [
-    "src/"
-  ],
   "keywords": [
     "scheduling,",
     "typescript"

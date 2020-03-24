@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+*.tgz
+coverage
+
+.eslintrc.js
+babel.config.js
+src/tests
