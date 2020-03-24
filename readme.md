@@ -1,6 +1,6 @@
-### Simple sheduling algorithm for planning tasks with day-based time quant
+## Simple sheduling algorithm for planning tasks with day-based time quant
 
-[NPM Package](https://npmjs.org/package/project-tasks-scheduling-engine)
+[![npm version](https://img.shields.io/npm/v/project-tasks-scheduling-engine?color=green&label=npm%20version)](https://www.npmjs.com/package/project-tasks-scheduling-engine)
 
 ## Install
 
