@@ -1,5 +1,5 @@
 import { Task } from "../../scheduleTasks";
-import { subDays } from "date-fns";
+import { subDays, addDays } from "date-fns";
 
 export const todayForTest = new Date("2020-01-01");
 export const tasks: Task[] = [
@@ -131,7 +131,7 @@ export const correctlyScheduledTasksWithProgresses: Task[] = [
   {
     id: "1",
     title: "Write tests for algorithms",
-    start: new Date("2020-01-02"),
+    start: addDays(todayForTest, 1),
     end: new Date("2020-01-03"),
     duration: 2,
     position: 1,
