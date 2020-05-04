@@ -1,5 +1,9 @@
 import { max, subBusinessDays, addBusinessDays, isEqual } from "date-fns";
-import { makeGraphFromTasks, makeReverseGraph, dfs } from "./graph.utils";
+import {
+  makeGraphFromTasks,
+  makeReverseGraph,
+  dfsWithRepetitions,
+} from "./graph.utils";
 import { shiftToFirstNextBusinessDay } from "./date.utils";
 
 type ID = string;
@@ -29,7 +33,7 @@ export const scheduleTasks = (tasks: Task[], today?: Date) => {
   const reverseGraph = makeReverseGraph(graph);
 
   // 2. If node is source, t.start = max(today, t.start)
-  dfs(graph, id => {
+  for (const [id] of dfsWithRepetitions(graph)) {
     const t = tasksById[id];
 
     const isSource = reverseGraph.get(id)?.size === 0;
@@ -40,11 +44,11 @@ export const scheduleTasks = (tasks: Task[], today?: Date) => {
       updateStartDate(t, today ?? new Date());
     } else {
       const prerequesionsEndDates = Array.from(reverseGraph.get(id) ?? []).map(
-        id => tasksById[id].end
+        (id) => tasksById[id].end
       );
       updateStartDate(t, addBusinessDays(max(prerequesionsEndDates), 1));
     }
-  });
+  }
 
   return tasks;
 };

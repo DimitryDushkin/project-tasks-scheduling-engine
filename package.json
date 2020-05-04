@@ -4,11 +4,12 @@
   "description": "Simple sheduling algorithm for planning tasks with day-based time quant",
   "main": "src/scheduleTasks.js",
   "scripts": {
-    "prepublishOnly": "npm run all-checks",
+    "prepublishOnly": "npm test && npm run lint && npm run compile",
+    "postpublish": "npm run clean",
     "compile": "tsc",
     "test": "jest",
     "lint": "eslint src/*.ts",
-    "all-checks": "npm test && npm run lint && npm run compile"
+    "clean": "rm -rf src/*.js src/tests/*.js src/tests/mocks/*.js src/tests/__snapshots__/*.js "
   },
   "repository": {
     "type": "git",
@@ -25,19 +26,19 @@
     "typescript"
   ],
   "dependencies": {
-    "date-fns": "^2.11.0"
+    "@babel/core": "^7.9.6",
+    "date-fns": "^2.12.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-env": "^7.9.6",
     "@babel/preset-typescript": "^7.9.0",
-    "@types/jest": "^25.1.4",
-    "@typescript-eslint/eslint-plugin": "^2.25.0",
-    "@typescript-eslint/parser": "^2.25.0",
+    "@types/jest": "^25.2.1",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
     "eslint": "^6.8.0",
-    "jest": "^25.1.0",
-    "lint-staged": "^10.0.8",
+    "jest": "^25.5.4",
     "pre-commit": "^1.2.2",
-    "prettier": "2.0.1",
-    "typescript": "^3.8.3"
+    "prettier": "2.0.5",
+    "typescript": "^3.9.0-beta"
   }
 }

@@ -1,4 +1,9 @@
-import { makeGraphFromTasks, Graph, makeReverseGraph } from "../graph.utils";
+import {
+  makeGraphFromTasks,
+  Graph,
+  makeReverseGraph,
+  dfsWithRepetitions,
+} from "../graph.utils";
 import { tasks } from "./mocks/tasks.mocks";
 
 describe("graph.utils", () => {
@@ -10,9 +15,46 @@ describe("graph.utils", () => {
     const graph: Graph = new Map([
       ["0", new Set(["1", "3"])],
       ["1", new Set("2")],
-      ["2", new Set("3")]
+      ["2", new Set("3")],
     ]);
 
     expect(makeReverseGraph(graph)).toMatchSnapshot();
   });
+
+  it("should correctly iterate over all nodes", () => {
+    const graph: Graph = new Map([
+      ["0", new Set(["1", "3"])],
+      ["1", new Set("2")],
+      ["2", new Set("3")],
+      ["3", new Set()],
+      ["4", new Set()],
+    ]);
+
+    const nodes = {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+    };
+
+    const expectedSum = 10;
+    const visited = new Set<string>();
+
+    let resultSum = 0;
+
+    for (const [id] of dfsWithRepetitions(graph)) {
+      if (hasKey(nodes, id) && !visited.has(id)) {
+        resultSum += nodes[id];
+        visited.add(id);
+      }
+    }
+    expect(resultSum).toEqual(expectedSum);
+  });
 });
+
+// since an object key can be any of those types, our key can too
+// in TS 3.0+, putting just "string" raises an error
+function hasKey<O>(obj: O, key: string | number | symbol): key is keyof O {
+  return key in obj;
+}

@@ -21,13 +21,13 @@ export const makeGraphFromTasks = (tasks: Task[]): Graph => {
     graph.set(t.id, new Set(t.dependencies ?? []));
   }
 
-  resources.forEach(tasksForResource => {
+  resources.forEach((tasksForResource) => {
     // sort by position
     tasksForResource.sort((a, b) => a.position - b.position);
 
     // add to graph such edges so first node has second as dependency
     let prevTask: Task;
-    tasksForResource.forEach(task => {
+    tasksForResource.forEach((task) => {
       if (prevTask) {
         graph.get(prevTask.id)?.add(task.id);
       }
@@ -41,57 +41,55 @@ export const makeGraphFromTasks = (tasks: Task[]): Graph => {
 export const makeReverseGraph = (graph: Graph): Graph => {
   const reverseGraph: Graph = new Map();
 
-  dfs(graph, (id, parentId) => {
+  for (const [id, parentId] of dfsWithRepetitions(graph)) {
     const prerequesitions = reverseGraph.get(id) ?? new Set();
     if (parentId) {
       prerequesitions.add(parentId);
     }
     reverseGraph.set(id, prerequesitions);
-  });
+  }
 
   return reverseGraph;
 };
 
 /**
- * Iterate over every vertex
- * @TODO: add tests
+ * Iterate over every node
  */
-export const dfs = (
-  graph: Graph,
-  vertexVisitor: (id: string, parentId?: string) => void
-) => {
+export function* dfsWithRepetitions(graph: Graph) {
   const visited = new Set<ID>();
 
   // DFS interative
-  // iterate over all vertexes in case of disconnected graph
-  graph.forEach((_, vertex) => {
-    if (visited.has(vertex)) {
-      return;
+  // iterate over all nodes in case of disconnected graph
+  for (const node of graph.keys()) {
+    if (visited.has(node)) {
+      continue;
     }
 
-    const stack: ID[] = [vertex];
+    const stack: ID[] = [node];
     while (stack.length > 0) {
-      const currentVertex = stack.pop();
+      const currentNode = stack.pop();
+      assertIsDefined(currentNode);
 
-      assertIsDefined(currentVertex);
+      yield [currentNode, undefined] as const;
 
-      vertexVisitor(currentVertex, undefined);
+      visited.add(currentNode);
 
-      visited.add(currentVertex);
-
-      const dependencies = graph.get(currentVertex);
-      dependencies?.forEach(dependencyId => {
-        vertexVisitor(dependencyId, currentVertex);
+      const dependencies = graph.get(currentNode);
+      if (!dependencies) {
+        continue;
+      }
+      for (const dependencyId of dependencies) {
+        yield [dependencyId, currentNode] as const;
 
         if (visited.has(dependencyId)) {
-          return;
+          continue;
         }
 
         stack.push(dependencyId);
-      });
+      }
     }
-  });
-};
+  }
+}
 
 function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
