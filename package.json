@@ -1,6 +1,6 @@
 {
   "name": "project-tasks-scheduling-engine",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Simple sheduling algorithm for planning tasks with day-based time quant",
   "main": "src/scheduleTasks.js",
   "scripts": {
