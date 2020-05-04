@@ -6,3 +6,6 @@ coverage
 .eslintrc.js
 babel.config.js
 src/tests
+
+.vscode
+yarn.lock
