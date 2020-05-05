@@ -21,19 +21,19 @@ export const makeGraphFromTasks = (tasks: Task[]): Graph => {
     graph.set(t.id, new Set(t.dependencies ?? []));
   }
 
-  resources.forEach((tasksForResource) => {
+  for (const tasksForResource of resources.values()) {
     // sort by position
     tasksForResource.sort((a, b) => a.position - b.position);
 
     // add to graph such edges so first node has second as dependency
-    let prevTask: Task;
-    tasksForResource.forEach((task) => {
+    let prevTask: Task | undefined;
+    for (const task of tasksForResource) {
       if (prevTask) {
         graph.get(prevTask.id)?.add(task.id);
       }
       prevTask = task;
-    });
-  });
+    }
+  }
 
   return graph;
 };
@@ -54,8 +54,11 @@ export const makeReverseGraph = (graph: Graph): Graph => {
 
 /**
  * Iterate over every node
+ * @yields {[string, string?]} [nodeId, parentNodeId?]
  */
-export function* dfsWithRepetitions(graph: Graph) {
+export function* dfsWithRepetitions(
+  graph: Graph
+): Generator<readonly [string, string?], void, void> {
   const visited = new Set<ID>();
 
   // DFS interative
@@ -70,7 +73,7 @@ export function* dfsWithRepetitions(graph: Graph) {
       const currentNode = stack.pop();
       assertIsDefined(currentNode);
 
-      yield [currentNode, undefined] as const;
+      yield [currentNode, undefined];
 
       visited.add(currentNode);
 
@@ -79,7 +82,8 @@ export function* dfsWithRepetitions(graph: Graph) {
         continue;
       }
       for (const dependencyId of dependencies) {
-        yield [dependencyId, currentNode] as const;
+        // possible to yield same nodeId multiple times (needed for making reverse graph)
+        yield [dependencyId, currentNode];
 
         if (visited.has(dependencyId)) {
           continue;
