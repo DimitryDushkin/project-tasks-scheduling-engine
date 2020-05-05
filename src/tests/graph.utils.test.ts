@@ -2,7 +2,7 @@ import {
   makeGraphFromTasks,
   Graph,
   makeReverseGraph,
-  dfsWithRepetitions,
+  dfs,
 } from "../graph.utils";
 import { tasks } from "./mocks/tasks.mocks";
 
@@ -39,14 +39,12 @@ describe("graph.utils", () => {
     };
 
     const expectedSum = 10;
-    const visited = new Set<string>();
 
     let resultSum = 0;
 
-    for (const [id] of dfsWithRepetitions(graph)) {
-      if (hasKey(nodes, id) && !visited.has(id)) {
+    for (const [id] of dfs(graph)) {
+      if (hasKey(nodes, id)) {
         resultSum += nodes[id];
-        visited.add(id);
       }
     }
     expect(resultSum).toEqual(expectedSum);

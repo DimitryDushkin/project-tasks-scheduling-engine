@@ -41,7 +41,7 @@ export const makeGraphFromTasks = (tasks: Task[]): Graph => {
 export const makeReverseGraph = (graph: Graph): Graph => {
   const reverseGraph: Graph = new Map();
 
-  for (const [id, parentId] of dfsWithRepetitions(graph)) {
+  for (const [id, parentId] of dfs(graph, { withParentId: true })) {
     const prerequesitions = reverseGraph.get(id) ?? new Set();
     if (parentId) {
       prerequesitions.add(parentId);
@@ -53,11 +53,13 @@ export const makeReverseGraph = (graph: Graph): Graph => {
 };
 
 /**
- * Iterate over every node
+ * Iterate over every node.
+ * If withParentId = true, than it is possible to visit same not more then once
  * @yields {[string, string?]} [nodeId, parentNodeId?]
  */
-export function* dfsWithRepetitions(
-  graph: Graph
+export function* dfs(
+  graph: Graph,
+  options: { withParentId: boolean } = { withParentId: false }
 ): Generator<readonly [string, string?], void, void> {
   const visited = new Set<ID>();
 
@@ -73,7 +75,7 @@ export function* dfsWithRepetitions(
       const currentNode = stack.pop();
       assertIsDefined(currentNode);
 
-      yield [currentNode, undefined];
+      yield [currentNode];
 
       visited.add(currentNode);
 
@@ -82,8 +84,10 @@ export function* dfsWithRepetitions(
         continue;
       }
       for (const dependencyId of dependencies) {
-        // possible to yield same nodeId multiple times (needed for making reverse graph)
-        yield [dependencyId, currentNode];
+        if (options.withParentId) {
+          // possible to yield same nodeId multiple times (needed for making reverse graph)
+          yield [dependencyId, currentNode];
+        }
 
         if (visited.has(dependencyId)) {
           continue;
