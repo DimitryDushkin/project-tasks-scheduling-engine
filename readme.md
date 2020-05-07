@@ -1,4 +1,4 @@
-## Simple scheduling algorithm for planning tasks with day-based time quant
+## Scheduling algorithm for planning tasks with day-based time quant
 
 [![npm version](https://img.shields.io/npm/v/project-tasks-scheduling-engine?color=green&label=npm%20version)](https://www.npmjs.com/package/project-tasks-scheduling-engine)
 
