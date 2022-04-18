@@ -1,141 +1,203 @@
+import { subtractDays } from "../../date.utils";
 import { Task } from "../../scheduleTasks";
-import { subDays, addDays } from "date-fns";
 
 export const todayForTest = new Date("2020-01-01");
-export const tasks: Task[] = [
+/**
+  ┌──────────────────┐
+  │ Prev project     ├─┐
+  │ id:0, Bob        │ │
+  └──────────────────┘ │Implicitly by dev
+                       │
+                     ┌─▼────────────┐
+                     │ Make UI      ├────────────┐
+                     │ id:1, Bob    │            │
+                     └──────────────┘            │
+                                                 │
+  ┌────────────────────┐                         │
+  │ Make algorithm     │                         │
+  │ id:2, Alice        ├───────────────────────┐ │
+  └────────────────────┘                       │ │
+                                           ┌───▼─▼────────────────────────┐
+                                           │ Complete: combine UI and alg │
+                                           │ id: 3, Alice                 │
+                                           └──────────────────────────────┘
+ */
+export const tasks: Array<Task> = [
   {
     id: "0",
-    title: "Make scheduling algorithm",
-    start: todayForTest,
-    end: new Date("2020-01-02"),
-    duration: 2,
     position: 0,
+    title: "Prev project",
+    start: todayForTest,
+    end: todayForTest,
+    duration: 2,
     progress: 0,
-    resourceId: "Alice",
-    dependencies: ["1"]
+    resourceId: "Bob",
   },
   {
     id: "1",
-    title: "Write tests for algorithms",
-    start: todayForTest,
-    end: new Date("2020-01-02"),
-    duration: 2,
     position: 1,
+    title: "Make UI",
+    start: todayForTest,
+    end: todayForTest,
+    duration: 2,
     progress: 0,
-    resourceId: "Bob"
+    resourceId: "Bob",
   },
   {
     id: "2",
-    title: "Research a lot of gantt plotting libs",
-    start: todayForTest,
-    end: new Date("2020-01-02"),
-    duration: 2,
     position: 2,
+    title: "Make algorithm",
+    start: todayForTest,
+    end: todayForTest,
+    duration: 3,
     progress: 0,
-    resourceId: "Bob",
-    dependencies: ["3"]
+    resourceId: "Alice",
   },
   {
     id: "3",
-    title: "Write your own",
-    start: todayForTest,
-    end: new Date("2020-01-02"),
-    duration: 2,
     position: 3,
-    progress: 0,
-    resourceId: "Alice"
-  }
-];
-
-export const correctlyScheduledTasks: Task[] = [
-  {
-    id: "0",
-    title: "Make scheduling algorithm",
+    title: "Complete: combine UI and algorithm",
     start: todayForTest,
-    end: new Date("2020-01-02"),
+    end: todayForTest,
     duration: 2,
-    position: 0,
     progress: 0,
     resourceId: "Alice",
-    dependencies: ["1"]
+    blockedBy: ["1", "2"],
+  },
+];
+
+export const correctlyScheduledTasks: Array<Task> = [
+  {
+    id: "0",
+    position: 0,
+    title: "Prev project",
+    start: todayForTest,
+    end: new Date("2020-01-02"),
+    duration: 2,
+    progress: 0,
+    resourceId: "Bob",
   },
   {
     id: "1",
-    title: "Write tests for algorithms",
+    position: 1,
+    title: "Make UI",
     start: new Date("2020-01-03"),
     end: new Date("2020-01-06"),
     duration: 2,
-    position: 1,
     progress: 0,
-    resourceId: "Bob"
+    resourceId: "Bob",
   },
   {
     id: "2",
-    title: "Research a lot of gantt plotting libs",
-    start: new Date("2020-01-07"),
-    end: new Date("2020-01-08"),
-    duration: 2,
     position: 2,
+    title: "Make algorithm",
+    start: todayForTest,
+    end: new Date("2020-01-03"),
+    duration: 3,
     progress: 0,
-    resourceId: "Bob",
-    dependencies: ["3"]
+    resourceId: "Alice",
   },
   {
     id: "3",
-    title: "Write your own",
-    start: new Date("2020-01-09"),
-    end: new Date("2020-01-10"),
-    duration: 2,
     position: 3,
+    title: "Complete: combine UI and algorithm",
+    start: new Date("2020-01-07"),
+    end: new Date("2020-01-08"),
+    duration: 2,
     progress: 0,
-    resourceId: "Alice"
-  }
+    resourceId: "Alice",
+    blockedBy: ["1", "2"],
+  },
 ];
 
-export const tasksWithProgresses: Task[] = [
+export const tasksWithProgresses: Array<Task> = [
   {
     id: "0",
     title: "Make scheduling algorithm",
     start: todayForTest,
-    end: new Date("2020-01-04"),
+    end: todayForTest,
     duration: 4,
     position: 0,
     progress: 0.5,
     resourceId: "Alice",
-    dependencies: ["1"]
   },
   {
     id: "1",
     title: "Write tests for algorithms",
     start: todayForTest,
-    end: new Date("2020-01-02"),
+    end: todayForTest,
     duration: 2,
     position: 1,
     progress: 0.5,
-    resourceId: "Bob"
-  }
+    resourceId: "Bob",
+    blockedBy: ["0"],
+  },
 ];
 
-export const correctlyScheduledTasksWithProgresses: Task[] = [
+export const correctlyScheduledTasksWithProgresses: Array<Task> = [
   {
     id: "0",
     title: "Make scheduling algorithm",
-    start: subDays(todayForTest, 2),
+    start: subtractDays(todayForTest, 2),
     end: new Date("2020-01-02"),
     duration: 4,
     position: 0,
     progress: 0.5,
     resourceId: "Alice",
-    dependencies: ["1"]
   },
   {
     id: "1",
     title: "Write tests for algorithms",
-    start: addDays(todayForTest, 1),
+    start: new Date("2020-01-02"),
     end: new Date("2020-01-03"),
     duration: 2,
     position: 1,
     progress: 0.5,
-    resourceId: "Bob"
-  }
+    resourceId: "Bob",
+    blockedBy: ["0"],
+  },
+];
+
+export const tasksSingleResource: Array<Task> = [
+  {
+    id: "0",
+    position: 0,
+    title: "Prev project",
+    start: todayForTest,
+    end: todayForTest,
+    duration: 1,
+    progress: 0,
+    resourceId: "Bob",
+  },
+  {
+    id: "1",
+    position: 1,
+    title: "Make UI",
+    start: todayForTest,
+    end: todayForTest,
+    duration: 1,
+    progress: 0,
+    resourceId: "Bob",
+  },
+  {
+    id: "2",
+    position: 2,
+    title: "Make algorithm",
+    start: todayForTest,
+    end: todayForTest,
+    duration: 1,
+    progress: 0,
+    resourceId: "Bob",
+  },
+  {
+    id: "3",
+    position: 3,
+    title: "Complete: combine UI and algorithm",
+    start: todayForTest,
+    end: todayForTest,
+    duration: 1,
+    progress: 0,
+    resourceId: "Bob",
+    blockedBy: ["1", "2"],
+  },
 ];

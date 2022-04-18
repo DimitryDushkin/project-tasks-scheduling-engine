@@ -1,18 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`graph.utils makes correct topological sort shuffle 1`] = `
+Array [
+  "0",
+  "1",
+  "2",
+  "3",
+]
+`;
+
+exports[`graph.utils makes correct topological sort shuffle 2`] = `
+Array [
+  "0",
+  "1",
+  "2",
+  "3",
+]
+`;
+
 exports[`graph.utils should make correct graph from tasks 1`] = `
 Map {
-  "0" => Set {
-    "1",
-    "3",
-  },
+  "0" => Set {},
   "1" => Set {
+    "0",
+  },
+  "2" => Set {},
+  "3" => Set {
+    "1",
     "2",
   },
-  "2" => Set {
-    "3",
+}
+`;
+
+exports[`graph.utils should make correct graph from tasks with single resource 1`] = `
+Map {
+  "0" => Set {},
+  "1" => Set {
+    "0",
   },
-  "3" => Set {},
+  "2" => Set {
+    "1",
+  },
+  "3" => Set {
+    "1",
+    "2",
+  },
 }
 `;
 

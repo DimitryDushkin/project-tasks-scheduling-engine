@@ -1,58 +1,74 @@
-import { max, subBusinessDays, addBusinessDays, isEqual } from "date-fns";
-import { makeGraphFromTasks, makeReverseGraph, dfs } from "./graph.utils";
-import { shiftToFirstNextBusinessDay } from "./date.utils";
+import {
+  makeGraphFromTasks,
+  dfs,
+  removeCyclicDependencies,
+  toposort,
+} from "./graph.utils";
+import {
+  addDays,
+  getNowDate,
+  maxDateTime,
+  subtractDays,
+  updateTaskDatesByStart,
+} from "./date.utils";
 
-type ID = string;
+export type ID = string;
 
+export type Graph = Map<ID, Set<ID>>;
+export type TasksById = { [id: string]: Task };
 export type Task = {
   id: ID;
   title: string;
   start: Date;
   end: Date;
   duration: number;
+
+  /**
+   * Approximation of priority
+   */
   position: number;
   progress: number;
   resourceId: ID;
-  dependencies?: ID[];
+  /**
+   * Current task blocked by these tasks (depends on)
+   */
+  blockedBy?: Array<ID>;
 };
 
-export const scheduleTasks = (tasks: Task[], today?: Date) => {
+export const scheduleTasks = (
+  inputTasks: Array<Task>,
+  today: Date = getNowDate()
+): Array<Task> => {
+  const dayBeforeToday = subtractDays(today, 1);
+  const tasks: Array<Task> = inputTasks.map((t) => ({ ...t }));
+  const tasksById: TasksById = Object.fromEntries(tasks.map((t) => [t.id, t]));
   const graph = makeGraphFromTasks(tasks);
-  const tasksById = tasks.reduce((map, task) => {
-    map[task.id] = task;
-    return map;
-  }, {} as { [id: string]: Task });
 
-  // @TODO: 0. Detect cycles, if present throw error
+  // 1. Remove cyclic dependencies
+  removeCyclicDependencies(graph, tasks);
 
-  // 1. Make reverse graph, to detect sinks and sources
-  const reverseGraph = makeReverseGraph(graph);
+  // 2. Initial update of all tasks start and ends days taking into account business days
+  for (const task of tasks) {
+    updateTaskDatesByStart(task, today, true);
+  }
 
-  // 2. If node is source, t.start = max(today, t.start)
   // Repeat until dates remains unchanged, max graph.size times.
   // Similar to optimization in Bellman-Ford algorithm
   // @see https://en.wikipedia.org/wiki/Bellman–Ford_algorithm#Improvements
-  for (let i = 0; i <= graph.size; i++) {
+  for (let i = 0; i < tasks.length; i++) {
     let datesChanged = false;
+    for (const [taskId] of dfs(graph)) {
+      const task = tasksById[taskId];
+      const blockedByTasks = Array.from(graph.get(task.id) ?? []).map(
+        (blockedById) => tasksById[blockedById]
+      );
+      const blockedByEndDates = blockedByTasks.map((t) => t.end);
+      // add dayBeforeToday by default, so task without blockedBy starts on today
+      blockedByEndDates.push(dayBeforeToday);
 
-    for (const [id] of dfs(graph)) {
-      const t = tasksById[id];
-
-      const isSource = reverseGraph.get(id)?.size === 0;
-      const isSink = graph.get(id)?.size === 0;
-      const isDisconnected = isSource && isSink;
-
-      if (isSource || isDisconnected) {
-        datesChanged = updateStartDate(t, today ?? new Date());
-      } else {
-        const prerequesionsEndDates = Array.from(
-          reverseGraph.get(id) ?? []
-        ).map((id) => tasksById[id].end);
-        datesChanged = updateStartDate(
-          t,
-          addBusinessDays(max(prerequesionsEndDates), 1)
-        );
-      }
+      // Start task on the next day after previous (blockedBy) tasks ends
+      const maxBlockedByEndDate = addDays(maxDateTime(blockedByEndDates), 1);
+      datesChanged = updateTaskDatesByStart(task, maxBlockedByEndDate);
     }
 
     if (datesChanged === false) {
@@ -60,26 +76,5 @@ export const scheduleTasks = (tasks: Task[], today?: Date) => {
     }
   }
 
-  return tasks;
-};
-
-/**
- * Update task dates, according to startDate change
- * @returns false if date didn't change, true if it changed
- */
-export const updateStartDate = (task: Task, startDate: Date) => {
-  const correctedStartDate = shiftToFirstNextBusinessDay(startDate);
-  const daysSpent = Math.floor(task.duration * task.progress);
-  const newStartDate = subBusinessDays(correctedStartDate, daysSpent);
-
-  if (isEqual(task.start, newStartDate)) {
-    return false;
-  }
-
-  task.start = subBusinessDays(correctedStartDate, daysSpent);
-  // -1 because every task is minimum 1 day long,
-  // say it starts and ends on same date, so it has 1 day duration
-  task.end = addBusinessDays(task.start, task.duration - 1);
-
-  return true;
+  return toposort(graph, tasks);
 };
