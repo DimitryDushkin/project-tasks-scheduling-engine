@@ -31,7 +31,7 @@ console.log(
         position: 0,
         progress: 0.5,
         resourceId: "Alice",
-        dependencies: ["1"]
+        blockedBy: ["1"]
       },
       {
         id: "1",
@@ -59,7 +59,7 @@ console.log(
     position: 0,
     progress: 0.5,
     resourceId: "Alice",
-    dependencies: ["1"]
+    blockedBy: ["1"]
   },
   {
     id: "1",
