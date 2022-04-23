@@ -30,7 +30,7 @@ const isDateEqual = (a: Date, b: Date) => isEqual(a, b);
 export const updateTaskDatesByStart = (
   task: Task,
   newStartDate: Date,
-  forceUpdate: boolean = false
+  forceUpdate = false
 ): boolean => {
   const daysSpent = Math.floor(task.duration * task.progress);
   const newStartDateCorrectedByHolidays =
