@@ -29,25 +29,32 @@ const isDateEqual = (a: Date, b: Date) => isEqual(a, b);
  */
 export const updateTaskDatesByStart = (
   task: Task,
-  startDate: Date,
+  newStartDate: Date,
   forceUpdate: boolean = false
 ): boolean => {
   const daysSpent = Math.floor(task.duration * task.progress);
-  const startDateCorrectedByHolidays = shiftToFirstNextBusinessDay(startDate);
-  const startDateCorrectedByProgress = substructBusinessDays(
-    startDateCorrectedByHolidays,
+  const newStartDateCorrectedByHolidays =
+    shiftToFirstNextBusinessDay(newStartDate);
+  const newStartDateCorrectedByProgress = substructBusinessDays(
+    newStartDateCorrectedByHolidays,
     daysSpent
   );
 
-  if (!forceUpdate && isDateEqual(task.start, startDateCorrectedByProgress)) {
+  if (
+    !forceUpdate &&
+    isDateEqual(task.start, newStartDateCorrectedByProgress)
+  ) {
     return false;
   }
 
-  task.start = startDateCorrectedByProgress;
+  task.start = newStartDateCorrectedByProgress;
 
   // -1 because every task is minimum 1 day long,
   // say it starts and ends on same date, so it has 1 day duration
-  task.end = addBusinessDays(startDateCorrectedByProgress, task.duration - 1);
+  task.end = addBusinessDays(
+    newStartDateCorrectedByProgress,
+    task.duration - 1
+  );
   return true;
 };
 

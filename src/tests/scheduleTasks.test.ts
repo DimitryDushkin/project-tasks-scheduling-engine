@@ -1,10 +1,12 @@
+import { makeGraphFromTasks } from "../graph.utils";
 import { scheduleTasks } from "../scheduleTasks";
+import { longSpreadedTasksMock } from "./mocks/longSpreadedtasks.mocks";
 import {
   tasks,
   correctlyScheduledTasks,
   todayForTest,
   tasksWithProgresses,
-  correctlyScheduledTasksWithProgresses
+  correctlyScheduledTasksWithProgresses,
 } from "./mocks/tasks.mocks";
 
 describe("scheduleTasks", () => {
@@ -16,5 +18,18 @@ describe("scheduleTasks", () => {
     expect(scheduleTasks(tasksWithProgresses, todayForTest)).toEqual(
       correctlyScheduledTasksWithProgresses
     );
+  });
+
+  it("should correctly schedule tasks with long spreaded links between them", () => {
+    const scheduledTasks = scheduleTasks(longSpreadedTasksMock, todayForTest);
+    const startTimes = new Set();
+
+    for (const task of scheduledTasks) {
+      if (startTimes.has(task.start.toISOString())) {
+        expect(true).toEqual(false);
+        throw new Error("time repeated!");
+      }
+      startTimes.add(task.start.toISOString());
+    }
   });
 });

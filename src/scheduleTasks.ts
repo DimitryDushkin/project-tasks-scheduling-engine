@@ -43,6 +43,7 @@ export const scheduleTasks = (
   const tasks: Array<Task> = inputTasks.map((t) => ({ ...t }));
   const tasksById: TasksById = Object.fromEntries(tasks.map((t) => [t.id, t]));
   const graph = makeGraphFromTasks(tasks);
+  let cyclesToFullyUpdateDates = 1;
 
   // 1. Remove cyclic dependencies
   removeCyclicDependencies(graph, tasks);
@@ -56,25 +57,48 @@ export const scheduleTasks = (
   // Similar to optimization in Bellman-Ford algorithm
   // @see https://en.wikipedia.org/wiki/Bellman–Ford_algorithm#Improvements
   for (let i = 0; i < tasks.length; i++) {
-    let datesChanged = false;
+    let isAnyTaskTimelineChanged = false;
+
     for (const [taskId] of dfs(graph)) {
       const task = tasksById[taskId];
-      const blockedByTasks = Array.from(graph.get(task.id) ?? []).map(
-        (blockedById) => tasksById[blockedById]
-      );
+      // if blockedBy task not in initial data set
+      if (task === undefined) {
+        continue;
+      }
+      const blockedByTasks = Array.from(graph.get(task.id) ?? [])
+        .map((blockedById) => tasksById[blockedById])
+        // do not take into account tasks not in graph
+        .filter(Boolean);
       const blockedByEndDates = blockedByTasks.map((t) => t.end);
       // add dayBeforeToday by default, so task without blockedBy starts on today
       blockedByEndDates.push(dayBeforeToday);
 
       // Start task on the next day after previous (blockedBy) tasks ends
       const maxBlockedByEndDate = addDays(maxDateTime(blockedByEndDates), 1);
-      datesChanged = updateTaskDatesByStart(task, maxBlockedByEndDate);
+      const isTaskTimelineUpdated = updateTaskDatesByStart(
+        task,
+        maxBlockedByEndDate
+      );
+      if (isTaskTimelineUpdated) {
+        isAnyTaskTimelineChanged = true;
+      }
     }
 
-    if (datesChanged === false) {
+    if (isAnyTaskTimelineChanged === false) {
       break;
     }
+    cyclesToFullyUpdateDates++;
+
+    if (isAnyTaskTimelineChanged && i === tasks.length - 1) {
+      console.error(
+        'It\'s not enought "tasks.length" interations to fully schedule all tasks!'
+      );
+    }
   }
+
+  console.debug(
+    `Cycles to fully update dates ${cyclesToFullyUpdateDates}/${tasks.length}`
+  );
 
   return toposort(graph, tasks);
 };

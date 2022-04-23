@@ -28,12 +28,18 @@ export const makeGraphFromTasks = (tasks: Array<Task>): Graph => {
     // first sort by position so links of tasks starts with higher position
     // then topological sort to reduce cyclic deps
     tasksOfResource.sort((a, b) => a.position - b.position);
+    // is toposort needed?
     const sortedTasks = toposort(graph, tasksOfResource);
 
     // add to graph such edges so current node has prev as dependency (blocked by prev)
     let prevTask: Task | void;
     for (const task of sortedTasks) {
-      if (prevTask && prevTask.id !== task.id) {
+      if (
+        prevTask &&
+        prevTask.id !== task.id &&
+        // has no incoming edge as well (otherwise it will be cyclic dep)
+        !graph.get(prevTask.id)?.has(task.id)
+      ) {
         graph.get(task.id)?.add(prevTask.id);
       }
       prevTask = task;
@@ -77,25 +83,24 @@ export function* dfs(
 
     const stack: Array<ID> = [node];
     while (stack.length > 0) {
-      const currentNode = stack.pop();
-      nullthrows(currentNode);
+      const nodeId = stack.pop();
+      nullthrows(nodeId);
 
-      yield [currentNode, undefined];
+      if (visited.has(nodeId)) {
+        continue;
+      }
+      visited.add(nodeId);
 
-      visited.add(currentNode);
+      yield [nodeId, undefined];
 
-      const blockedBy = graph.get(currentNode);
+      const blockedBy = graph.get(nodeId);
       if (!blockedBy) {
         continue;
       }
       for (const dependencyId of blockedBy) {
         if (options.withParentId) {
           // possible to yield same nodeId multiple times (needed for making reverse graph)
-          yield [dependencyId, currentNode];
-        }
-
-        if (visited.has(dependencyId)) {
-          continue;
+          yield [dependencyId, nodeId];
         }
 
         stack.push(dependencyId);
@@ -117,8 +122,9 @@ export const removeCyclicDependencies = (
 ): void => {
   // Track visited to avoid computing path for already computed nodes
   const visited = new Set();
+  let cyclicDepsRemovedCount = 0;
 
-  const dfsAndFix = (rootTaskId: ID) => {
+  const dfsAndRemove = (rootTaskId: ID) => {
     // [current task ID, set of previously visited tasks]
     const stack: Array<[ID, Set<ID>]> = [[rootTaskId, new Set()]];
 
@@ -136,6 +142,7 @@ export const removeCyclicDependencies = (
         if (prevSet.has(blockedById)) {
           // remove that edge
           blockedBy.delete(blockedById);
+          cyclicDepsRemovedCount++;
           continue;
         }
 
@@ -151,8 +158,10 @@ export const removeCyclicDependencies = (
       continue;
     }
 
-    dfsAndFix(task.id);
+    dfsAndRemove(task.id);
   }
+
+  console.debug("Cyclic deps removed:", cyclicDepsRemovedCount);
 };
 
 /**
