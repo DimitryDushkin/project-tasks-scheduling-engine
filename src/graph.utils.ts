@@ -4,7 +4,7 @@ import { TasksById, Graph, Task } from "./scheduleTasks";
 type ID = string;
 
 /**
- * Graph respects exlicit dependecies
+ * Graph respects explicit dependencies
  * and implicit by resources (via positions)
  */
 export const makeGraphFromTasks = (tasks: Array<Task>): Graph => {
@@ -74,7 +74,7 @@ export function* dfs(
 ): Generator<[string, string | void], void, void> {
   const visited = new Set<ID>();
 
-  // DFS interative
+  // DFS iterative
   // iterate over all nodes in case of disconnected graph
   for (const node of graph.keys()) {
     if (visited.has(node)) {
@@ -110,7 +110,7 @@ export function* dfs(
 }
 
 /**
- * Main source of cyclic dependecies is previous step where graph is created
+ * Main source of cyclic dependencies is previous step where graph is created
  * Often top-level task has same owner as children tasks
  * Since we create edge in graph also by same owner that's why there is cyclic deps
  *
@@ -213,7 +213,7 @@ export function* dfsWithLevels(
 ): Generator<[string, number, number], void, void> {
   const visited = new Set<ID>();
 
-  // DFS interative
+  // DFS iterative
   // iterate over all nodes in case of disconnected graph
   let topNodesCount = 1;
   for (const node of graph.keys()) {

@@ -23,7 +23,7 @@ const isDateEqual = (a: Date, b: Date) => isEqual(a, b);
 
 /**
  * Update task dates, according to startDate change
- * forceUpdate param for intial set start-end dates according to duration, progress and business days
+ * forceUpdate param for initial set start-end dates according to duration, progress and business days
  *
  * @returns false if date didn't change, true if it changed
  */
