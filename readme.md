@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/project-tasks-scheduling-engine?color=green&label=npm%20version)](https://www.npmjs.com/package/project-tasks-scheduling-engine)
 
 Publications:
-* In English — https://medium.com/@sky2high/task-planning-algorithm-in-typescript-53a20cef6163.
+* In English — https://dushkin.tech/posts/task_planning_algorithm/
 * На русском — https://habr.com/ru/post/515554/
 
 ## Install
